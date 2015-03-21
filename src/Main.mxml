@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx">
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.rpc.events.FaultEvent;
+
+        private var fr:FileReference;
+        private var DOWNLOAD_URL:String = "http://www.education.gov.yk.ca/pdf/pdf-test.pdf";
+
+        private function startDownload(event:Event=null):void
+        {
+            fr = new FileReference();
+            fr.addEventListener(Event.OPEN, openHandler);
+            fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+            fr.addEventListener(Event.COMPLETE, completeHandler);
+            fr.addEventListener(FaultEvent.FAULT, faultHandler);
+
+            var request:URLRequest = new URLRequest();
+            request.url = DOWNLOAD_URL;
+            fr.download(request);
+        }
+
+        private function faultHandler(event:FaultEvent):void
+        {
+            var fileReference:FileReference = event.target as FileReference;
+            fileReference.removeEventListener(Event.OPEN, openHandler);
+            fileReference.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
+            fileReference.removeEventListener(Event.COMPLETE, completeHandler);
+            fileReference.removeEventListener(FaultEvent.FAULT, faultHandler);
+
+            var faultString:String ="";
+            if( event && event.fault )
+            {
+                faultString = event.fault.faultString;
+            }
+
+            downloadProgressBar.label = "Fault: " + faultString;
+            cancelDownloadButton.enabled = false;
+        }
+
+        private function openHandler(event:Event):void
+        {
+            downloadProgressBar.label = "DOWNLOADING...";
+            cancelDownloadButton.enabled = true;
+        }
+
+        private function progressHandler(event:ProgressEvent):void
+        {
+            downloadProgressBar.setProgress(event.bytesLoaded, event.bytesTotal);
+        }
+
+        private function completeHandler(event:Event):void
+        {
+            downloadProgressBar.label = "DOWNLOAD COMPLETE";
+            cancelDownloadButton.enabled = false;
+
+            var myTimer:Timer = new Timer(3000, 1);
+            myTimer.addEventListener(TimerEvent.TIMER_COMPLETE,
+                    function(event:TimerEvent):void{
+                        var u:URLRequest = new URLRequest("http://www.adobe.com/products/flex.html");
+                        navigateToURL(u,"_self");
+            });
+            myTimer.start();
+        }
+
+        private function cancelDownload(event:Event=null):void
+        {
+            fr.cancel();
+
+            fr.removeEventListener(Event.OPEN, openHandler);
+            fr.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
+            fr.removeEventListener(Event.COMPLETE, completeHandler);
+            fr.removeEventListener(FaultEvent.FAULT, faultHandler);
+        }
+        ]]></fx:Script>
+    <s:Panel title="Download File">
+        <s:layout>
+            <s:VerticalLayout verticalAlign="middle" horizontalAlign="center" />
+        </s:layout>
+        <mx:ProgressBar id="downloadProgressBar" label="" mode="manual" />
+        <mx:ControlBar horizontalAlign="right">
+            <mx:Button id="startDownloadButton" label="Download..." click="startDownload();" />
+            <mx:Button id="cancelDownloadButton" label="Cancel" click="fr.cancel();" enabled="false" />
+        </mx:ControlBar>
+    </s:Panel>
+</s:Application>
