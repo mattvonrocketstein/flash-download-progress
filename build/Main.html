@@ -27,7 +27,7 @@
     Learn more about Flex at http://flex.apache.org 
     // -->
     <head>
-        <title>Main</title>
+        <title>main</title>
         <meta name="google" value="notranslate" />         
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <!-- Include CSS to eliminate any default margins/padding and set the height of the html element and 
@@ -53,21 +53,25 @@
         <script type="text/javascript" src="swfobject.js"></script>
         <script type="text/javascript">
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
-            var swfVersionStr = "14.0.0";
+            var swfVersionStr = "17.0.0";
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
             var xiSwfUrlStr = "playerProductInstall.swf";
             var flashvars = {};
+            flashvars.downloadUrlBase = "http://d3j5jocw37dwty.cloudfront.net/DE3460.zip";
+            flashvars.downloadFile = "DE3460";
+            flashvars.reportToUrl = "http://www.google.com";
+            flashvars.dlTitle = "Title";
             var params = {};
             params.quality = "high";
             params.bgcolor = "#ffffff";
             params.allowscriptaccess = "sameDomain";
             params.allowfullscreen = "true";
             var attributes = {};
-            attributes.id = "Main";
-            attributes.name = "Main";
+            attributes.id = "main";
+            attributes.name = "main";
             attributes.align = "middle";
             swfobject.embedSWF(
-                "Main.swf", "flashContent", 
+                "main.swf", "flashContent", 
                 "100%", "100%", 
                 swfVersionStr, xiSwfUrlStr, 
                 flashvars, params, attributes);
@@ -83,7 +87,7 @@
         <div id="flashContent">
             <p>
                 To view this page ensure that Adobe Flash Player version 
-                14.0.0 or greater is installed. 
+                17.0.0 or greater is installed. 
             </p>
             <script type="text/javascript"> 
                 var pageHost = ((document.location.protocol == "https:") ? "https://" : "http://"); 
@@ -93,14 +97,14 @@
         </div>
         
         <noscript>
-            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%" id="Main">
-                <param name="movie" value="Main.swf" />
+            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%" id="main">
+                <param name="movie" value="main.swf" />
                 <param name="quality" value="high" />
                 <param name="bgcolor" value="#ffffff" />
                 <param name="allowScriptAccess" value="sameDomain" />
                 <param name="allowFullScreen" value="true" />
                 <!--[if !IE]>-->
-                <object type="application/x-shockwave-flash" data="Main.swf" width="100%" height="100%">
+                <object type="application/x-shockwave-flash" data="main.swf" width="100%" height="100%">
                     <param name="quality" value="high" />
                     <param name="bgcolor" value="#ffffff" />
                     <param name="allowScriptAccess" value="sameDomain" />
@@ -109,7 +113,7 @@
                 <!--[if gte IE 6]>-->
                     <p> 
                         Either scripts and active content are not permitted to run or Adobe Flash Player version
-                        14.0.0 or greater is not installed.
+                        17.0.0 or greater is not installed.
                     </p>
                 <!--<![endif]-->
                     <a href="http://www.adobe.com/go/getflashplayer">

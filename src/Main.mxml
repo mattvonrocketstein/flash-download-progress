@@ -2,7 +2,8 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/mx"
-                preinitialize="{preInitializeHandler(event)}">
+                preinitialize="{preInitializeHandler(event)}"
+               applicationComplete="applicationCompleteHandler();">
     <fx:Script><![CDATA[
         import mx.controls.Alert;
         import mx.core.FlexGlobals;
@@ -12,20 +13,35 @@
         private var fr:FileReference;
         private var DOWNLOAD_URL:String = "http://www.education.gov.yk.ca/pdf/publications/yukon_secondary_programming_summary.pdf?a=2";
         private var _numberFormatter:NumberFormatter;
+        private var flexGlobalsObject:Object;
 
-        [Bindable] public var downloadProgessString = "To continue, click below and choose where you’d like to save your downlosad";
+        private var downloadUrlBase:String;
+        private var downloadFile:String;
+        private var reportToUrl:String;
 
-        private function preInitializeHandler(event:Event):void
-        {
-            if( !_numberFormatter )
-            {
+        [Bindable]
+        private var dlTitle:String;
+        [Bindable]
+        public var downloadProgressString = "To continue, click below and choose where you’d like to save your downlosad";
+
+        private function preInitializeHandler(event:Event):void {
+            if (!_numberFormatter) {
                 _numberFormatter = new NumberFormatter();
                 _numberFormatter.precision = 0;
             }
         }
 
-        private function startDownload(event:Event=null):void
-        {
+        private function applicationCompleteHandler(event:Event = null) {
+            flexGlobalsObject = new Object();
+            flexGlobalsObject = FlexGlobals.topLevelApplication;
+
+            downloadUrlBase = flexGlobalsObject.parameters.downloadUrlBase;
+            downloadFile = flexGlobalsObject.parameters.downloadFile;
+            reportToUrl = flexGlobalsObject.parameters.reportToUrl;
+            dlTitle = flexGlobalsObject.parameters.dlTitle;
+        }
+
+        private function startDownload(event:Event = null):void {
             fr = new FileReference();
             fr.addEventListener(Event.OPEN, openHandler);
             fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
@@ -34,26 +50,23 @@
             fr.addEventListener(FaultEvent.FAULT, faultHandler);
 
             var request:URLRequest = new URLRequest();
-            request.url = DOWNLOAD_URL;
+            request.url = downloadUrlBase;
             fr.download(request);
         }
 
-        private function ioFaultHandler(event:IOErrorEvent):void
-        {
-            Alert.show("Remote file does not exist","IO Error",Alert.OK,FlexGlobals.topLevelApplication as Sprite,null);
+        private function ioFaultHandler(event:IOErrorEvent):void {
+            Alert.show("Remote file does not exist", "IO Error", Alert.OK, FlexGlobals.topLevelApplication as Sprite, null);
         }
 
-        private function faultHandler(event:FaultEvent):void
-        {
+        private function faultHandler(event:FaultEvent):void {
             var fileReference:FileReference = event.target as FileReference;
             fileReference.removeEventListener(Event.OPEN, openHandler);
             fileReference.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
             fileReference.removeEventListener(Event.COMPLETE, completeHandler);
             fileReference.removeEventListener(FaultEvent.FAULT, faultHandler);
 
-            var faultString:String ="";
-            if( event && event.fault )
-            {
+            var faultString:String = "";
+            if (event && event.fault) {
                 faultString = event.fault.faultString;
             }
 
@@ -61,45 +74,49 @@
             cancelDownloadButton.enabled = false;
         }
 
-        private function openHandler(event:Event):void
-        {
+        private function openHandler(event:Event):void {
             downloadProgressBar.label = "DOWNLOADING...";
             cancelDownloadButton.enabled = true;
         }
 
-        private function progressHandler(event:ProgressEvent):void
-        {
+        private function progressHandler(event:ProgressEvent):void {
             downloadProgressBar.setProgress(event.bytesLoaded, event.bytesTotal);
             var percentageDownloaded = (event.bytesLoaded / event.bytesTotal) * 100;
             var formattedPercentage = _numberFormatter.format(percentageDownloaded);
-            downloadProgessString = "Downloaded " + formattedPercentage + "%";
+            downloadProgressString = "Downloaded " + formattedPercentage + "%";
         }
 
-        private function completeHandler(event:Event):void
-        {
+        private function completeHandler(event:Event):void {
             downloadProgressBar.label = "DOWNLOAD COMPLETE";
             cancelDownloadButton.enabled = false;
 
+            fr.removeEventListener(Event.OPEN, openHandler);
+            fr.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
+            fr.removeEventListener(Event.COMPLETE, completeHandler);
+            fr.removeEventListener(FaultEvent.FAULT, faultHandler);
+            fr.removeEventListener(IOErrorEvent.IO_ERROR, ioFaultHandler);
+
             var myTimer:Timer = new Timer(3000, 1);
             myTimer.addEventListener(TimerEvent.TIMER_COMPLETE,
-                    function(event:TimerEvent):void{
-                        var u:URLRequest = new URLRequest("http://www.adobe.com/products/flex.html");
+                    function (event:TimerEvent):void {
+                        var u:URLRequest = new URLRequest(reportToUrl);
+                        u.method = URLRequestMethod.POST;
                         navigateToURL(u,"_self");
-            });
+                    });
             myTimer.start();
         }
 
-        private function cancelDownload(event:Event=null):void
-        {
+        private function cancelDownload(event:Event = null):void {
             fr.cancel();
 
             fr.removeEventListener(Event.OPEN, openHandler);
             fr.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
             fr.removeEventListener(Event.COMPLETE, completeHandler);
             fr.removeEventListener(FaultEvent.FAULT, faultHandler);
+            fr.removeEventListener(IOErrorEvent.IO_ERROR, ioFaultHandler);
         }
         ]]></fx:Script>
-    <s:Panel title="{downloadProgessString}" minWidth="450">
+    <s:Panel title="{downloadProgressString}" minWidth="450">
         <s:layout>
             <s:VerticalLayout verticalAlign="middle" horizontalAlign="center" />
         </s:layout>
