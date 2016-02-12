@@ -1,25 +1,46 @@
 <?xml version="1.0"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
-               xmlns:mx="library://ns.adobe.com/flex/mx">
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+                preinitialize="{preInitializeHandler(event)}">
     <fx:Script><![CDATA[
         import mx.controls.Alert;
+        import mx.core.FlexGlobals;
+        import mx.formatters.NumberFormatter;
         import mx.rpc.events.FaultEvent;
 
         private var fr:FileReference;
-        private var DOWNLOAD_URL:String = "http://www.education.gov.yk.ca/pdf/pdf-test.pdf";
+        private var DOWNLOAD_URL:String = "http://www.education.gov.yk.ca/pdf/publications/yukon_secondary_programming_summary.pdf?a=2";
+        private var _numberFormatter:NumberFormatter;
+
+        [Bindable] public var downloadProgessString = "To continue, click below and choose where you’d like to save your downlosad";
+
+        private function preInitializeHandler(event:Event):void
+        {
+            if( !_numberFormatter )
+            {
+                _numberFormatter = new NumberFormatter();
+                _numberFormatter.precision = 0;
+            }
+        }
 
         private function startDownload(event:Event=null):void
         {
             fr = new FileReference();
             fr.addEventListener(Event.OPEN, openHandler);
             fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+            fr.addEventListener(IOErrorEvent.IO_ERROR, ioFaultHandler);
             fr.addEventListener(Event.COMPLETE, completeHandler);
             fr.addEventListener(FaultEvent.FAULT, faultHandler);
 
             var request:URLRequest = new URLRequest();
             request.url = DOWNLOAD_URL;
             fr.download(request);
+        }
+
+        private function ioFaultHandler(event:IOErrorEvent):void
+        {
+            Alert.show("Remote file does not exist","IO Error",Alert.OK,FlexGlobals.topLevelApplication as Sprite,null);
         }
 
         private function faultHandler(event:FaultEvent):void
@@ -49,6 +70,9 @@
         private function progressHandler(event:ProgressEvent):void
         {
             downloadProgressBar.setProgress(event.bytesLoaded, event.bytesTotal);
+            var percentageDownloaded = (event.bytesLoaded / event.bytesTotal) * 100;
+            var formattedPercentage = _numberFormatter.format(percentageDownloaded);
+            downloadProgessString = "Downloaded " + formattedPercentage + "%";
         }
 
         private function completeHandler(event:Event):void
@@ -75,7 +99,7 @@
             fr.removeEventListener(FaultEvent.FAULT, faultHandler);
         }
         ]]></fx:Script>
-    <s:Panel title="Download File">
+    <s:Panel title="{downloadProgessString}" minWidth="450">
         <s:layout>
             <s:VerticalLayout verticalAlign="middle" horizontalAlign="center" />
         </s:layout>
