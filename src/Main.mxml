@@ -2,7 +2,7 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/mx"
-                preinitialize="{preInitializeHandler(event)}"
+               preinitialize="{preInitializeHandler(event)}"
                applicationComplete="applicationCompleteHandler();">
     <fx:Script><![CDATA[
         import mx.controls.Alert;
@@ -101,7 +101,7 @@
                     function (event:TimerEvent):void {
                         var u:URLRequest = new URLRequest(reportToUrl);
                         u.method = URLRequestMethod.POST;
-                        navigateToURL(u,"_self");
+                        navigateToURL(u, "_self");
                     });
             myTimer.start();
         }
@@ -118,12 +118,12 @@
         ]]></fx:Script>
     <s:Panel title="{downloadProgressString}" minWidth="450" dropShadowVisible="false">
         <s:layout>
-            <s:VerticalLayout verticalAlign="middle" horizontalAlign="center" />
+            <s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
         </s:layout>
-        <mx:ProgressBar id="downloadProgressBar" label="" mode="manual" />
+        <mx:ProgressBar id="downloadProgressBar" label="" mode="manual"/>
         <mx:ControlBar horizontalAlign="right">
-            <mx:Button id="startDownloadButton" label="Download..." click="startDownload();" />
-            <mx:Button id="cancelDownloadButton" label="Cancel" click="fr.cancel();" enabled="false" />
+            <mx:Button id="startDownloadButton" label="Download..." click="startDownload();"/>
+            <mx:Button id="cancelDownloadButton" label="Cancel" click="fr.cancel();" enabled="false"/>
         </mx:ControlBar>
     </s:Panel>
 </s:Application>
