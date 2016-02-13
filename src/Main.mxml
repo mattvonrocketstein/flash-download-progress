@@ -22,7 +22,7 @@
         [Bindable]
         private var dlTitle:String;
         [Bindable]
-        public var downloadProgressString = "To continue, click below and choose where you’d like to save your downlosad";
+        public var downloadProgressString = "To continue, click below and choose where you’d like to save your download";
 
         private function preInitializeHandler(event:Event):void {
             if (!_numberFormatter) {
@@ -116,7 +116,7 @@
             fr.removeEventListener(IOErrorEvent.IO_ERROR, ioFaultHandler);
         }
         ]]></fx:Script>
-    <s:Panel title="{downloadProgressString}" minWidth="450">
+    <s:Panel title="{downloadProgressString}" minWidth="450" dropShadowVisible="false">
         <s:layout>
             <s:VerticalLayout verticalAlign="middle" horizontalAlign="center" />
         </s:layout>
